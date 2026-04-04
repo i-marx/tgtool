@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TG Tool — Telegram Utilities</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ AUTH VIEW -->
+<div id="view-auth" class="view active">
+  <div class="auth-wrap">
+    <div class="auth-card glass-card">
+      <div class="auth-logo">
+        <img src="/static/logo_horizontal.png" alt="TG Tool" class="logo-img" onerror="this.style.display='none'; document.getElementById('logo-text-auth').style.display='block'" />
+        <span id="logo-text-auth" class="logo-text-fallback" style="display:none">TG Tool</span>
+      </div>
+      <p class="auth-subtitle">Your credentials stay in your browser only.<br/>Nothing is stored on our servers.</p>
+
+      <!-- Step 1: API credentials + phone -->
+      <div id="auth-step-1">
+        <div class="form-row">
+          <label>API ID</label>
+          <input id="inp-api-id" class="glass-input" type="number" placeholder="12345678" autocomplete="off" />
+        </div>
+        <div class="form-row">
+          <label>API Hash</label>
+          <input id="inp-api-hash" class="glass-input" type="text" placeholder="0123456789abcdef0123456789abcdef" autocomplete="off" />
+        </div>
+        <div class="form-row">
+          <label>Phone Number</label>
+          <input id="inp-phone" class="glass-input" type="tel" placeholder="+1234567890" autocomplete="off" />
+        </div>
+        <button id="btn-send-code" class="btn-primary btn-full">Send Code</button>
+        <p id="auth-error-1" class="auth-error"></p>
+      </div>
+
+      <!-- Step 2: OTP -->
+      <div id="auth-step-2" style="display:none">
+        <p class="auth-hint">Enter the code Telegram sent to your phone.</p>
+        <div class="form-row">
+          <label>Verification Code</label>
+          <input id="inp-code" class="glass-input otp-input" type="text" placeholder="12345" maxlength="10" autocomplete="one-time-code" />
+        </div>
+        <div class="form-row" id="pwd-row" style="display:none">
+          <label>2FA Password</label>
+          <input id="inp-pwd" class="glass-input" type="password" placeholder="Your cloud password" />
+        </div>
+        <button id="btn-sign-in" class="btn-primary btn-full">Sign In</button>
+        <button id="btn-back" class="btn-ghost btn-full" style="margin-top:8px">← Back</button>
+        <p id="auth-error-2" class="auth-error"></p>
+      </div>
+    </div>
+    <p class="auth-footer">Session token stored in localStorage · Cleared when you log out</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ HOME VIEW -->
+<div id="view-home" class="view">
+  <header class="app-header glass-header">
+    <div class="header-inner">
+      <img src="/static/logo_horizontal.png" alt="TG Tool" class="header-logo" onerror="this.style.display='none'; document.getElementById('logo-text-header').style.display='block'" />
+      <span id="logo-text-header" class="logo-text-fallback" style="display:none">TG Tool</span>
+      <div class="header-right">
+        <span id="header-username" class="header-user"></span>
+        <button id="btn-logout" class="btn-ghost btn-sm">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <div class="section-label">TOOLS</div>
+    <div class="tools-grid">
+
+      <div class="tool-card glass-card" data-tool="export_members">
+        <div class="tool-icon">👥</div>
+        <div class="tool-info">
+          <div class="tool-name">Export Members</div>
+          <div class="tool-desc">Export members from a single chat to CSV</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="export_all">
+        <div class="tool-icon">📋</div>
+        <div class="tool-info">
+          <div class="tool-name">Export All Chats</div>
+          <div class="tool-desc">Export a list of all your chats &amp; channels</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="export_full">
+        <div class="tool-icon">🔍</div>
+        <div class="tool-info">
+          <div class="tool-name">Deep Member Scan</div>
+          <div class="tool-desc">Full/deep export of members across multiple chats</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="common_chats">
+        <div class="tool-icon">🔗</div>
+        <div class="tool-info">
+          <div class="tool-name">Groups in Common</div>
+          <div class="tool-desc">Find groups shared with another user</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="boosters">
+        <div class="tool-icon">⚡</div>
+        <div class="tool-info">
+          <div class="tool-name">Export Boosters</div>
+          <div class="tool-desc">Get the list of boosters for a channel</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="resolve_ids">
+        <div class="tool-icon">🆔</div>
+        <div class="tool-info">
+          <div class="tool-name">Resolve IDs</div>
+          <div class="tool-desc">Batch-resolve usernames / links to Telegram IDs</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="emoji_pack">
+        <div class="tool-icon">😊</div>
+        <div class="tool-info">
+          <div class="tool-name">Download Emoji Pack</div>
+          <div class="tool-desc">Save a sticker / emoji pack as PNG or GIF</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+      <div class="tool-card glass-card" data-tool="tgs_to_gif">
+        <div class="tool-icon">🎞️</div>
+        <div class="tool-info">
+          <div class="tool-name">TGS → GIF Converter</div>
+          <div class="tool-desc">Convert animated Telegram stickers to GIF</div>
+        </div>
+        <div class="tool-arrow">›</div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ TOOL VIEW -->
+<div id="view-tool" class="view">
+  <header class="app-header glass-header">
+    <div class="header-inner">
+      <button id="btn-back-home" class="btn-ghost btn-sm">← Back</button>
+      <span id="tool-view-title" class="tool-view-title"></span>
+      <div class="header-right">
+        <button id="btn-logout-2" class="btn-ghost btn-sm">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="tool-main">
+    <div id="tool-form-area" class="glass-card tool-form-card">
+      <!-- Dynamically injected per tool -->
+    </div>
+
+    <div id="tool-output-area" class="glass-card tool-output-card" style="display:none">
+      <div class="output-header">
+        <span class="output-title">Output</span>
+        <button id="btn-download" class="btn-accent btn-sm" style="display:none">⬇ Download CSV</button>
+      </div>
+      <div id="tool-log" class="tool-log"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ CHAT PICKER MODAL -->
+<div id="modal-chat" class="modal-backdrop" style="display:none">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <span class="modal-title">Select Chat</span>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <input id="chat-search" class="glass-input" type="text" placeholder="Search chats..." />
+    <div id="chat-list" class="chat-list"></div>
+    <div id="chat-loading" class="chat-loading">Loading chats…</div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
