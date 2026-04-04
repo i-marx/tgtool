@@ -37,19 +37,8 @@
           <label>API Hash</label>
           <input id="inp-api-hash" class="glass-input" type="text" placeholder="0123456789abcdef0123456789abcdef" autocomplete="off" />
         </div>
-        <div class="api-help-box">
-          <span class="api-help-icon">ℹ️</span>
-          <div>
-            <strong>Where do I get API credentials?</strong><br/>
-            <ol class="api-help-steps">
-              <li>Go to <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org/apps</a></li>
-              <li>Log in with your Telegram phone number</li>
-              <li>Click <em>API development tools</em></li>
-              <li>Create an app — any name works</li>
-              <li>Copy the <strong>App api_id</strong> and <strong>App api_hash</strong></li>
-            </ol>
-            These are free and take 30 seconds to get.
-          </div>
+        <div class="api-help-link-row">
+          <button class="api-help-link" id="btn-api-help">How do I get my API credentials?</button>
         </div>
         <div class="form-row">
           <label>Phone Number</label>
@@ -209,6 +198,45 @@
     <input id="chat-search" class="glass-input" type="text" placeholder="Search chats..." />
     <div id="chat-list" class="chat-list"></div>
     <div id="chat-loading" class="chat-loading">Loading chats…</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ API HELP MODAL -->
+<div id="modal-api-help" class="modal-backdrop" style="display:none">
+  <div class="modal glass-card api-help-modal">
+    <div class="modal-header">
+      <span class="modal-title">Getting your Telegram API credentials</span>
+      <button class="modal-close" id="api-help-close">✕</button>
+    </div>
+    <div class="api-help-content">
+      <p class="api-help-intro">API credentials identify TG Tool as an app to Telegram. They're free, take 30 seconds to get, and are different from your account password.</p>
+      <ol class="api-steps">
+        <li>
+          <span class="step-num">1</span>
+          <div>Go to <a href="https://my.telegram.org/apps" target="_blank" rel="noopener">my.telegram.org/apps</a> and log in with your phone number</div>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <div>Click <strong>API development tools</strong></div>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <div>Fill in any app name and short name (e.g. "MyApp" / "myapp") — the content doesn't matter</div>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <div>Click <strong>Create application</strong></div>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <div>Copy the <strong>App api_id</strong> (a number) and <strong>App api_hash</strong> (a long hex string) into the login form</div>
+        </li>
+      </ol>
+      <div class="api-help-note">
+        🔒 Your API credentials are only used to connect to Telegram from your browser session. They are never stored on our servers.
+      </div>
+      <a href="https://my.telegram.org/apps" target="_blank" rel="noopener" class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:20px">Open my.telegram.org →</a>
+    </div>
   </div>
 </div>
 

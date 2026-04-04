@@ -199,6 +199,16 @@ $('btn-sign-in').addEventListener('click', async () => {
   }
 });
 
+$('btn-api-help').addEventListener('click', () => {
+  $('modal-api-help').style.display = 'flex';
+});
+$('api-help-close').addEventListener('click', () => {
+  $('modal-api-help').style.display = 'none';
+});
+$('modal-api-help').addEventListener('click', e => {
+  if (e.target === $('modal-api-help')) $('modal-api-help').style.display = 'none';
+});
+
 $('btn-back').addEventListener('click', () => {
   $('auth-step-1').style.display = 'block';
   $('auth-step-2').style.display = 'none';

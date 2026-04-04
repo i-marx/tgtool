@@ -193,22 +193,49 @@ html, body {
   display: block; font-size: 12px; font-weight: 500;
   color: var(--c-dim); margin-bottom: 6px; letter-spacing: 0.3px;
 }
-.api-help-box {
-  display: flex; gap: 10px; align-items: flex-start;
+/* ─── API Help ───────────────────────────────── */
+.api-help-link-row { margin-bottom: 14px; text-align: center; }
+.api-help-link {
+  background: none; border: none;
+  color: var(--c-blue); font-family: inherit;
+  font-size: 12px; cursor: pointer;
+  text-decoration: underline; opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.api-help-link:hover { opacity: 1; }
+
+.api-help-modal { max-width: 480px; width: 100%; }
+.api-help-content { padding: 20px 24px 24px; }
+.api-help-intro {
+  color: var(--c-dim); font-size: 13px;
+  line-height: 1.6; margin-bottom: 20px;
+}
+.api-steps {
+  list-style: none; padding: 0; margin: 0 0 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.api-steps li {
+  display: flex; gap: 14px; align-items: flex-start;
+  font-size: 13px; line-height: 1.55; color: var(--c-dim);
+}
+.api-steps li strong { color: var(--c-text); }
+.api-steps li a { color: var(--c-blue); text-decoration: none; }
+.api-steps li a:hover { text-decoration: underline; }
+.step-num {
+  flex-shrink: 0; width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--c-blue-dim);
+  border: 1px solid rgba(42,171,238,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--c-blue);
+}
+.api-help-note {
   background: rgba(42,171,238,0.07);
-  border: 1px solid rgba(42,171,238,0.18);
+  border: 1px solid rgba(42,171,238,0.15);
   border-radius: var(--radius-sm);
-  padding: 12px 14px; margin-bottom: 14px;
+  padding: 10px 14px;
   font-size: 12px; color: var(--c-dim); line-height: 1.6;
 }
-.api-help-box strong { color: var(--c-text); }
-.api-help-box a { color: var(--c-blue); text-decoration: none; }
-.api-help-box a:hover { text-decoration: underline; }
-.api-help-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-.api-help-steps {
-  margin: 4px 0 4px 16px; padding: 0;
-}
-.api-help-steps li { margin-bottom: 2px; }
 
 .auth-error {
   color: var(--c-error); font-size: 12px;
