@@ -180,7 +180,7 @@ $('btn-sign-in').addEventListener('click', async () => {
         phone:           STATE._phone,
         phone_code_hash: STATE.phoneCodeHash,
         code,
-        password: pwd || null,
+        password: pwd || "",
         api_id:   STATE._apiId,
         api_hash: STATE._apiHash,
       }),
