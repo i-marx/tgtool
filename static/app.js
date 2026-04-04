@@ -82,7 +82,10 @@ async function apiFetch(path, opts = {}) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const detail = Array.isArray(data.detail)
-      ? data.detail.map(d => d.msg || JSON.stringify(d)).join('; ')
+      ? data.detail.map(d => {
+          const loc = Array.isArray(d.loc) ? d.loc.join('.') : '';
+          return loc ? `[${loc}] ${d.msg}` : (d.msg || JSON.stringify(d));
+        }).join('; ')
       : (typeof data.detail === 'string' ? data.detail : data.error || `HTTP ${res.status}`);
     throw new Error(detail);
   }

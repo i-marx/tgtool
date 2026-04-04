@@ -11,7 +11,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, F
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 from telethon import TelegramClient, errors, functions, types
 from telethon.sessions import StringSession
@@ -79,12 +80,14 @@ async def _resolve(c: TelegramClient, ref: str):
 
 # ── Pydantic request models ───────────────────────────────────────────────────
 class PhoneReq(BaseModel):
+    model_config = ConfigDict(extra='ignore')
     phone: str
 
 class SignInReq(BaseModel):
+    model_config = ConfigDict(extra='ignore')
     phone: str
     code: str
-    password: str = ""
+    password: Optional[str] = ""
     phone_code_hash: str
     partial_session: str
 
