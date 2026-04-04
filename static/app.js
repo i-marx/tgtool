@@ -80,7 +80,12 @@ async function apiFetch(path, opts = {}) {
     ...opts,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || data.error || `HTTP ${res.status}`);
+  if (!res.ok) {
+    const detail = Array.isArray(data.detail)
+      ? data.detail.map(d => d.msg || JSON.stringify(d)).join('; ')
+      : (typeof data.detail === 'string' ? data.detail : data.error || `HTTP ${res.status}`);
+    throw new Error(detail);
+  }
   return data;
 }
 
