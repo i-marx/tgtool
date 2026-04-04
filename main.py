@@ -589,5 +589,5 @@ async def _emoji_pack(c, p, log, done, err):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/{full_path:path}")
-async def spa(_: str):
+async def spa(full_path: str = ""):
     return FileResponse("static/index.html")
