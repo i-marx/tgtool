@@ -76,6 +76,21 @@ async def _resolve(c: TelegramClient, ref: str):
         ref = ref[len("https://t.me/"):].strip("/@")
     elif ref.startswith("@"):
         ref = ref[1:]
+    # Try numeric ID — Telethon needs int, and supergroups need -100 prefix
+    try:
+        num = int(ref)
+        # Try as-is first (negative IDs work directly)
+        if num < 0:
+            return await c.get_entity(num)
+        # Positive bare ID — try supergroup prefix first, then plain
+        for candidate in [int(f"-100{num}"), num]:
+            try:
+                return await c.get_entity(candidate)
+            except Exception:
+                continue
+        raise ValueError(f"Could not resolve numeric ID {num}")
+    except ValueError:
+        pass
     return await c.get_entity(ref)
 
 # ── Pydantic request models ───────────────────────────────────────────────────
@@ -181,7 +196,8 @@ async def dialogs(req: SessionReq):
                 kind = "Group"
             else:
                 continue
-            out.append({"id": e.id, "title": getattr(e, "title", ""), "type": kind})
+            full_id = int(f"-100{e.id}") if isinstance(e, (Channel, Chat)) else e.id
+            out.append({"id": full_id, "title": getattr(e, "title", ""), "type": kind})
         return out
     finally:
         await c.disconnect()
