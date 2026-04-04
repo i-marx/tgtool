@@ -389,7 +389,7 @@ const TOOLS = {
         const cid = $('hid-chat-id').value;
         if (!cid) { alert('Select a chat first.'); return; }
         setLoading('btn-run', true);
-        runTool({ tool: 'export_members', params: { chat_id: cid } });
+        runTool({ tool: 'export_members', params: { chat_ref: cid } });
       });
     },
   },
@@ -465,7 +465,7 @@ const TOOLS = {
         const cid = $('hid-booster-id').value;
         if (!cid) { alert('Select a channel first.'); return; }
         setLoading('btn-run', true);
-        runTool({ tool: 'boosters', params: { chat_id: cid } });
+        runTool({ tool: 'boosters', params: { chat_ref: cid } });
       });
     },
   },
