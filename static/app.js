@@ -440,7 +440,7 @@ const TOOLS = {
         const t = $('inp-target').value.trim();
         if (!t) { alert('Enter a username or ID.'); return; }
         setLoading('btn-run', true);
-        runTool({ tool: 'common_chats', params: { target: t } });
+        runTool({ tool: 'common_chats', params: { usernames: [t] } });
       });
     },
   },
