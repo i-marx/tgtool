@@ -511,7 +511,7 @@ const TOOLS = {
         const fmt  = $('sel-fmt').value;
         if (!pack) { alert('Enter a pack link or short name.'); return; }
         setLoading('btn-run', true);
-        runTool({ tool: 'emoji_pack', params: { pack, format: fmt } });
+        runTool({ tool: 'emoji_pack', params: { pack_name: pack, format: fmt } });
       });
     },
   },
