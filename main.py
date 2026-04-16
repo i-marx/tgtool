@@ -4,7 +4,7 @@ TgTool.xyz — Telegram Tools Web Backend
 Zero server-side storage: session strings live in the user's browser only.
 API_ID / API_HASH are the site-owner's Telegram app credentials (env vars).
 """
-import asyncio, csv, io, itertools, os, re, tempfile, time, uuid, zipfile
+import asyncio, csv, io, itertools, os, re, subprocess, tempfile, time, uuid, zipfile
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form
@@ -571,11 +571,49 @@ async def _resolve_ids(c, p, log, done, err):
     await done(tok, len(results), filename)
 
 
+def _webm_to_gif(data: bytes) -> bytes:
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as f:
+            f.write(data); src = f.name
+        dst = src.replace(".webm", ".gif")
+        subprocess.run([
+            "ffmpeg", "-y", "-i", src,
+            "-vf", "fps=15,scale=120:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
+            "-loop", "0", dst
+        ], check=True, capture_output=True, timeout=30)
+        with open(dst, "rb") as f: return f.read()
+    except Exception:
+        return b""
+    finally:
+        for p_ in [src, dst]:
+            try: os.unlink(p_)
+            except: pass
+
+def _tgs_to_gif(data: bytes) -> bytes:
+    try:
+        import gzip, rlottie_python as rl
+        from PIL import Image
+        json_data = gzip.decompress(data)
+        anim = rl.LottieAnimation.from_data(json_data.decode())
+        frames, n = [], anim.lottie_animation_get_totalframe()
+        for i in range(n):
+            buf = anim.lottie_animation_render(i, (120, 120))
+            frames.append(Image.frombytes("RGBA", (120, 120), buf).convert("RGBA"))
+        if not frames: return b""
+        out = io.BytesIO()
+        frames[0].save(out, format="GIF", save_all=True, append_images=frames[1:],
+                       loop=0, disposal=2)
+        return out.getvalue()
+    except Exception:
+        return b""
+
 async def _emoji_pack(c, p, log, done, err):
     raw = p.get("pack_name", "")
     m   = re.search(r"t\.me/(?:addstickers|addemoji)/([A-Za-z0-9_]+)", raw, re.I)
     pack_name = m.group(1) if m else raw.strip().lstrip("@").split("/")[-1]
     if not pack_name: return await err("Invalid pack name or link")
+
+    fmt = p.get("format", "webm")  # "png", "gif", "webm"
 
     await log(f"Looking up pack: {pack_name}…")
     try:
@@ -590,12 +628,29 @@ async def _emoji_pack(c, p, log, done, err):
         for i, doc in enumerate(result.documents, 1):
             data  = await c.download_file(doc, bytes)
             attrs = getattr(doc, "attributes", [])
-            is_tgs = any(getattr(a, "mime_type", "") == "application/x-tgsticker"
-                         for a in attrs)
-            ext = "tgs" if is_tgs else "webm"
-            zf.writestr(f"{i:03d}_{doc.id}.{ext}", data)
+            mime  = next((getattr(a, "mime_type", "") for a in attrs if hasattr(a, "mime_type")), "")
+            is_tgs  = mime == "application/x-tgsticker"
+            is_webm = mime == "video/webm" or (not is_tgs and data[:4] == b'\x1aE\xdf\xa3')
+
+            out_data, ext = data, "webm"
+            if is_tgs:
+                if fmt == "gif":
+                    out_data = _tgs_to_gif(data) or data
+                    ext = "gif" if out_data != data else "tgs"
+                else:
+                    ext = "tgs"
+            elif is_webm:
+                if fmt == "gif":
+                    out_data = _webm_to_gif(data) or data
+                    ext = "gif" if out_data != data else "webm"
+                else:
+                    ext = "webm"
+            else:
+                ext = "png"
+
+            zf.writestr(f"{i:03d}_{doc.id}.{ext}", out_data)
             if i % 10 == 0 or i == result.set.count:
-                await log(f"  Downloaded {i}/{result.set.count}")
+                await log(f"  Converted {i}/{result.set.count}")
 
     safe     = _safe(result.set.title) or pack_name
     filename = f"{safe}_pack.zip"
